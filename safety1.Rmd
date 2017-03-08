@@ -12,6 +12,19 @@ library(FactoMineR)
 setwd("/Users/maijutanskanen/IODS-project 8.58.53")
 safety <- read.csv(file = "safety2009analysis.csv", sep = ";", header = TRUE)
 ```
+## Research question and hypotheses
+
+In this assignment, I am going to study if gender, age, education, non-domestic violent victimization and crime in one’s neighbourhood predict domestic violence victimization. Based on both intuition and some criminological theories that I am not going to focus on here, the following hypotheses are made:
+
+_H1 Women are more likely to have experienced domestic violence than men._
+
+_H2 Young people are more likely to have experienced domestic violence than the old._
+
+_H3 Less educated people are more likely to have experienced domestic violence._
+
+_H4 Those who ha experienced other than domestic violence are more likely to have experienced domestic violence as well._
+
+_H5 Serious crime problem in one’s neighbourhood increases the risk of having experienced domestic violence._
 
 
 ## Data 
@@ -19,7 +32,7 @@ safety <- read.csv(file = "safety2009analysis.csv", sep = ";", header = TRUE)
 ### Public Safety Survey 2009 
 
 
-The data used in this exercise is Public Safety Survey 2009 which is collected by Finnish Police Departments. It is available for research, study and teaching purposes on Yhteiskuntatieteellinen tietoarkisto and can be downloaded [here](https://services.fsd.uta.fi/catalogue/FSD2502).
+The data used in this assignment is Public Safety Survey 2009 which is collected by Finnish Police Departments. It is available for research, study and teaching purposes on Yhteiskuntatieteellinen tietoarkisto and can be downloaded [here](https://services.fsd.uta.fi/catalogue/FSD2502).
 
 The data contains information about Finnish opinion and experiences on policing, public safety and security, victimization, and services in the neighbourhood, and with 46139 cases it is a nationally representative sample of Finnish population aged 15–74.
 
@@ -69,7 +82,7 @@ gather(safety[-4]) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") +
 
 **Relationships between variables**
 
-Before the actual analysis, relationships between the variables are studied using simple descriptive methods in order to form hypotheses concerning the results of the regression analysis.
+Before the actual analysis, relationships between the variables are studied using simple descriptive methods.
 
 The cross-tabulation below shows that more women had experienced domestic violence compared to men (2,8 % vs. 0,9 %).
 
@@ -78,12 +91,14 @@ table1 <-  table(safety$gender, safety$domestic)
 prop.table(table1, 1)
 ```
 
+
 Surprisingly, there are no big differences in prevalence of domestic violence between education groups even though those with secondary education had experienced slightly more domestic violence than those with lower or higher educational level.
 
 ```{r}
 table2 <-  table(safety$education, safety$domestic)
 prop.table(table2, 1)
 ```
+
 
 Those who had experienced non-domestic violence had experienced more domestic violence (19,2 % vs. 1,3 %).
 
@@ -92,12 +107,14 @@ table3 <-  table(safety$violence, safety$domestic)
 prop.table(table3, 1)
 ```
 
+
 Those who considered crime problem in their neighbourhood serious reported more than twice as much domestic violence than those with considered problem not serious.
 
 ```{r}
 table4 <-  table(safety$crimeprob, safety$domestic)
 prop.table(table4, 1)
 ```
+
 
 Based on the boxplot below, it seems like young people had experienced more domestic violence in both genders.
 
@@ -107,19 +124,6 @@ g1 + geom_boxplot(aes(col = gender))
 ```
 
 
-## Hypotheses
-
-Before conducting the analysis, five hypotheses are made based on previous observations:
-
-_H1 Women are more likely to have experienced domestic violence than men._
-
-_H2 Young people are more likely to have experienced more domestic violence than the old._
-
-_H3 Educational level is not a statistically significant predictor of domestic violence._
-
-_H4 Those who have experienced other than domestic violence are more likely to have experienced domestic violence as well._
-
-_H5 Serious crime problem in one’s neighbourhood increases the risk of having experienced domestic violence._
 
 ## Analysis
 
@@ -129,7 +133,7 @@ Logistic regression analysis is a method used to predict binary outcomes. It can
 
 ### Logistic regression analysis
 
-Before the analysis, reference categories of “gender” and “education” are changed. Then, a logistic regression model is built using domestic violence as the outcome variable and the rest of the variables as predictors. The results of the analysis are seen below. All the independent variables except education are statistically significant predictors (p<0.001); at this point, hypothesis H3 can be confirmed.
+Before the analysis, reference categories of “gender” and “education” are changed. Then, a logistic regression model is built using domestic violence as the outcome variable and the rest of the variables as predictors. The results of the analysis are seen below. All the independent variables except education are statistically significant predictors (p<0.001); at this point, hypothesis H3 can be rejected.
 
 
 ```{r}
@@ -143,7 +147,7 @@ Next, the odds ratios and the confidence intervals for them are counted and prin
 
 Women are almost four times more likely to have experienced domestic violence than men. Young people are more likely to have experienced domestic violence than the old. Those who have experienced other than domestic violence are almost 18 times more likely to have experienced domestic violence as well. Serious crime problem in one’s neighbourhood increases the risk of having experienced domestic violence by 1,7.
 
-Thus, hypotheses H1, H2, H4 and H5 can be confirmed.
+Thus, hypotheses H1, H2, H4 and H5 can be verified.
 
 
 ```{r message = FALSE}
@@ -154,7 +158,7 @@ cbind(OR, CI)
 
 ## Testing the model
 
-Even though the results of the analysis are as expected, it does not necessarily mean that the model is actually a good one in predicting the outcome variable. That is why it is important to test the predictive power of the model.
+Even though the results of the analysis are for most parts as expected, it does not necessarily mean that the model is actually a good one in predicting the outcome variable. That is why it is important to test the predictive power of the model.
 
 In order to do so, two variables are counted based on the regression model: "probability", indicating the probability of domestic violence victimization being reported according to the model, and "prediction" indicating that according to the model there is more than a 50 % chance of domestic violence victimization being reported.
 
@@ -171,7 +175,7 @@ table(domestic = safety$domestic, prediction = safety$prediction)
 
 ### Classification error
 
-Next, error produced by the model is studied using loss function and cross-validation. Obviously, both of them result in error of 1,8 %, which is equal to the prevalence of domestic violence in the data. Even though the error is small, it basically means that the model is just as good in predicting domestic violence as simply guessing that nobody has experienced it. In order to have some explanatory power, the error of the model should definitely be smaller than the prevalence of the predicted phenomenon in the data!
+Next, error produced by the model is studied using loss function and cross-validation. Obviously, both of them result in error of 1,9 %, which is equal to the prevalence of domestic violence in the data. Even though the error is small, it basically means that the model is just as good in predicting domestic violence as simply guessing that nobody has experienced it. In order to have some explanatory power, the error of the model should definitely be smaller than the prevalence of the predicted phenomenon in the data!
 
 ```{r}
 loss_func <- function(class, prob) {

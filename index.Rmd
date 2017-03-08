@@ -1,6 +1,7 @@
 ---
 title: "IODS Final Assignment: Determining predictors of domestic violence using logistic regression analysis"
-author: "Maiju Tanskanen"
+author: "Maiju Tanskanen, maiju.tanskanen@helsinki.fi"
+date: 8.3.2017
 output:
   html_document:
     theme: journal
