@@ -145,7 +145,7 @@ $(document).ready(function () {
 <p>As only variables used is the analysis were included and cases with missing answers were deleted, there are 6 variables and 40641 cases in the analysis data.</p>
 <p><strong>Dependent variable</strong></p>
 <p>The variable indicating domestic violence victimization during the past three years is coded into a dichotomous one in order to use it as a dependent variable in logistic regression analysis.</p>
-<p>The summary of the domestic violence variable and a barplot visualizing its distribution are displayed below. Only 789 (1,9 %) respondents in the analysis data experienced domestic violence during the past three years, and thus it may be problematic to use the variable as a dependent variable in the analysis. However, this is done as the question of its predictors is highly interesting.</p>
+<p>The summary of the domestic violence variable and a barplot visualizing its distribution are displayed below. Only 789 (1,9 %) respondents in the analysis data experienced domestic violence during the past three years, and thus it may be problematic to use the variable as a dependent variable in the analysis. However, this is done as the question of its predictors is interesting.</p>
 <pre class="r"><code>summary(safety$domestic)</code></pre>
 <pre><code>##    no   yes 
 ## 39873   768</code></pre>
@@ -301,7 +301,7 @@ loss_func(class = safety$domestic, prob = safety$probability)</code></pre>
 cv &lt;- cv.glm(data = safety, cost = loss_func, glmfit = m, K = 10)
 
 cv$delta[1]</code></pre>
-<pre><code>## [1] 0.01889717</code></pre>
+<pre><code>## [1] 0.01892178</code></pre>
 </div>
 </div>
 <div id="conclusions" class="section level2">

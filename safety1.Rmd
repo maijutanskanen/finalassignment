@@ -50,7 +50,7 @@ As only variables used is the analysis were included and cases with missing answ
 
 The variable indicating domestic violence victimization during the past three years is coded into a dichotomous one in order to use it as a dependent variable in logistic regression analysis. 
 
-The summary of the domestic violence variable and a barplot visualizing its distribution are displayed below. Only 789 (1,9 %) respondents in the analysis data experienced domestic violence during the past three years, and thus it may be problematic to use the variable as a dependent variable in the analysis. However, this is done as the question of its predictors is highly interesting.
+The summary of the domestic violence variable and a barplot visualizing its distribution are displayed below. Only 789 (1,9 %) respondents in the analysis data experienced domestic violence during the past three years, and thus it may be problematic to use the variable as a dependent variable in the analysis. However, this is done as the question of its predictors is interesting.
 
 ```{r}
 summary(safety$domestic)
