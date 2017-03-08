@@ -1,5 +1,5 @@
 ---
-title: "Final Assignment"
+title: "IODS Final Assignment: Determining predictors of domestic violence using logistic regression analysis"
 author: "Maiju Tanskanen"
 output:
   html_document:

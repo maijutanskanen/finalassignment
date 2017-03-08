@@ -1,1 +1,202 @@
-## write analysis
+# Determining predictors of domestic violence using logistic regression analysis
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+library(MASS)
+library(dplyr)
+library(ggplot2)
+library(GGally)
+library(tidyverse)
+library(corrplot)
+library(stringr)
+library(FactoMineR)
+setwd("/Users/maijutanskanen/IODS-project 8.58.53")
+safety <- read.csv(file = "safety2009analysis.csv", sep = ";", header = TRUE)
+```
+
+
+## Data 
+
+### Public Safety Survey 2009 
+
+
+The data used in this exercise is Public Safety Survey 2009 which is collected by Finnish Police Departments. It is available for research, study and teaching purposes on Yhteiskuntatieteellinen tietoarkisto and can be downloaded [here](https://services.fsd.uta.fi/catalogue/FSD2502).
+
+The data contains information about Finnish opinion and experiences on policing, public safety and security, victimization, and services in the neighbourhood, and with 46139 cases it is a nationally representative sample of Finnish population aged 15–74.
+
+In the survey questionnaire, information about domestic violence victimization has been asked as following:
+
+_Have you personally experienced any of the following crimes in the past three years? Where did this happen: Domestic violence_
+
+### Analysis data
+
+In this assignment, a subset of the Public Safety Survey data is used. The r-code for creating the analysis data can be found [here](https://github.com/maijutanskanen/finalassignment/blob/master/wrangling.R) 
+
+As only variables used is the analysis were included and cases with missing answers were deleted, there are 6 variables and 40641 cases in the analysis data.
+
+**Dependent variable**
+
+The variable indicating domestic violence victimization during the past three years is coded into a dichotomous one in order to use it as a dependent variable in logistic regression analysis. 
+
+The summary of the domestic violence variable and a barplot visualizing its distribution are displayed below. Only 789 (1,9 %) respondents in the analysis data experienced domestic violence during the past three years, and thus it may be problematic to use the variable as a dependent variable in the analysis. However, this is done as the question of its predictors is highly interesting.
+
+```{r}
+summary(safety$domestic)
+counts <- table(safety$domestic)
+barplot(counts, main = "Domestic violence during the past three years")
+```
+
+
+**Independent variables**
+
+Gender, age in years, education level, non-domestic violent victimization during the past three years and crime problem in respondent’s neighbourhood are used as independent variables.
+
+Education is coded into three groups: primary or less, secondary and tertiary. Non-domestic violent victimization is coded into a dichotomous variable. 
+
+Crime problem in respondent’s neighbourhood is measured as serious or not serious based on the questionnaire’s question How serious a problem you consider crime to be in or around your neighbourhood? ‘Can’t say’ answers were coded as missing.
+
+The summaries and distributions of the independent variables are displayed below. 
+
+The mean age of the respondents is 49 years, and there are more women than men in the data. Secondary education is the most common education level. 
+
+A bit more respondents had experienced non-domestic violence compared to domestic violence: 1315 (3,2 %). 7361 (18,1 %) respondents considered crime problem in their neighbourhood serious. 
+
+
+```{r warning=FALSE}
+summary (safety[-4])
+gather(safety[-4]) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar()
+```
+
+
+**Relationships between variables**
+
+Before the actual analysis, relationships between the variables are studied using simple descriptive methods in order to form hypotheses concerning the results of the regression analysis.
+
+The cross-tabulation below shows that more women had experienced domestic violence compared to men (2,8 % vs. 0,9 %).
+
+```{r}
+table1 <-  table(safety$gender, safety$domestic)
+prop.table(table1, 1)
+```
+
+Surprisingly, there are no big differences in prevalence of domestic violence between education groups even though those with secondary education had experienced slightly more domestic violence than those with lower or higher educational level.
+
+```{r}
+table2 <-  table(safety$education, safety$domestic)
+prop.table(table2, 1)
+```
+
+Those who had experienced non-domestic violence had experienced more domestic violence (19,2 % vs. 1,3 %).
+
+```{r}
+table3 <-  table(safety$violence, safety$domestic)
+prop.table(table3, 1)
+```
+
+Those who considered crime problem in their neighbourhood serious reported more than twice as much domestic violence than those with considered problem not serious.
+
+```{r}
+table4 <-  table(safety$crimeprob, safety$domestic)
+prop.table(table4, 1)
+```
+
+Based on the boxplot below, it seems like young people had experienced more domestic violence in both genders.
+
+```{r}
+g1 <- ggplot(safety, aes(x = domestic, y = age))
+g1 + geom_boxplot(aes(col = gender))
+```
+
+
+## Hypotheses
+
+Before conducting the analysis, five hypotheses are made based on previous observations:
+
+_H1 Women are more likely to have experienced domestic violence than men._
+
+_H2 Young people are more likely to have experienced more domestic violence than the old._
+
+_H3 Educational level is not a statistically significant predictor of domestic violence._
+
+_H4 Those who have experienced other than domestic violence are more likely to have experienced domestic violence as well._
+
+_H5 Serious crime problem in one’s neighbourhood increases the risk of having experienced domestic violence._
+
+## Analysis
+
+###Method
+
+Logistic regression analysis is a method used to predict binary outcomes. It can be conducted using multiple explanatory variables that can be either categorical or continuous.  Results of logistic regression analysis are usually represented as odds ratios for each predictor; they can be interpreted as associations between a predictor and an outcome variable.
+
+### Logistic regression analysis
+
+Before the analysis, reference categories of “gender” and “education” are changed. Then, a logistic regression model is built using domestic violence as the outcome variable and the rest of the variables as predictors. The results of the analysis are seen below. All the independent variables except education are statistically significant predictors (p<0.001); at this point, hypothesis H3 can be confirmed.
+
+
+```{r}
+safety$gender <- relevel(safety$gender, ref = "Male")
+safety$education <- relevel(safety$education, ref = "Tertiary")
+m <- glm(domestic ~  gender + violence + age + education + crimeprob, data = safety, family = "binomial")
+summary(m)
+```
+
+Next, the odds ratios and the confidence intervals for them are counted and printed out in order to interpret the results. Following statements can be made:
+
+Women are almost four times more likely to have experienced domestic violence than men. Young people are more likely to have experienced domestic violence than the old. Those who have experienced other than domestic violence are almost 18 times more likely to have experienced domestic violence as well. Serious crime problem in one’s neighbourhood increases the risk of having experienced domestic violence by 1,7.
+
+Thus, hypotheses H1, H2, H4 and H5 can be confirmed.
+
+
+```{r message = FALSE}
+OR <- coef(m) %>% exp
+CI <- confint(m) %>% exp
+cbind(OR, CI)
+```
+
+## Testing the model
+
+Even though the results of the analysis are as expected, it does not necessarily mean that the model is actually a good one in predicting the outcome variable. That is why it is important to test the predictive power of the model.
+
+In order to do so, two variables are counted based on the regression model: "probability", indicating the probability of domestic violence victimization being reported according to the model, and "prediction" indicating that according to the model there is more than a 50 % chance of domestic violence victimization being reported.
+
+### Real values vs. predicted values
+
+The actual values of the domestic violence variable and its values predicted by the model are cross-tabulated below. The cross-tabulation shows that based on the model, none of the cases is has more than a 50 % chance of domestic violence victimization being reported; in other words, all the respondents are predicted not to have experienced domestic violence even though there are 768 people who actually reported having been victimized.
+
+```{r}
+probabilities <- predict(m, type = "response")
+safety <- mutate(safety, probability = probabilities)
+safety <- mutate(safety, prediction = (probability > 0.5))
+table(domestic = safety$domestic, prediction = safety$prediction)
+```
+
+### Classification error
+
+Next, error produced by the model is studied using loss function and cross-validation. Obviously, both of them result in error of 1,8 %, which is equal to the prevalence of domestic violence in the data. Even though the error is small, it basically means that the model is just as good in predicting domestic violence as simply guessing that nobody has experienced it. In order to have some explanatory power, the error of the model should definitely be smaller than the prevalence of the predicted phenomenon in the data!
+
+```{r}
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+safety$domestic <- as.numeric(safety$domestic) -1
+loss_func(class = safety$domestic, prob = safety$probability)
+```
+
+```{r}
+library(boot)
+cv <- cv.glm(data = safety, cost = loss_func, glmfit = m, K = 10)
+
+cv$delta[1]
+```
+
+
+## Conclusions
+
+Finally, some conclusions should be made based on what have been done. 
+
+Firstly, there are statistically significant predictors of domestic violence victimization based on the analysis. Interestingly, out of the explanatory variables used in the analysis, non-domestic violent victimization is the strongest predictor. It has a greater association with domestic violence victimization than gender.
+
+Secondly, testing the model shows that it actually is not good in predicting domestic violence victimization. This is basically caused by the very low proportion of respondents who had experienced domestic violence; in order to successfully predict a rare phenomenon like this, the model should be very strong.
+
+Yet, as a sociology student, I do still find the results of the analysis interesting: they do reveal associations between phenomena. In my opinion, this is almost as important as successfully predicting things. 

@@ -1,8 +1,9 @@
-#Maiju Tanskanen
+#Maiju Tanskanen, maiju.tanskanen@helsinki.fi
 #Data wrangling on Public Safety Survey 2009 -data
+#IODS Spring 2017
 #7.3.2017
 
-library(MASS)
+
 library(dplyr)
 
 # 1) CHANGING FILE FORMAT
