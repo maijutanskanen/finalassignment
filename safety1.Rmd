@@ -160,11 +160,11 @@ cbind(OR, CI)
 
 Even though the results of the analysis are for most parts as expected, it does not necessarily mean that the model is actually a good one in predicting the outcome variable. That is why it is important to test the predictive power of the model.
 
-In order to do so, two variables are counted based on the regression model: "probability", indicating the probability of domestic violence victimization being reported according to the model, and "prediction" indicating that according to the model there is more than a 50 % chance of domestic violence victimization being reported.
+In order to do so, two variables are counted based on the regression model: "probability" indicating the probability of domestic violence victimization being reported according to the model, and "prediction" indicating that according to the model there is more than a 50 % chance of domestic violence victimization being reported.
 
 ### Real values vs. predicted values
 
-The actual values of the domestic violence variable and its values predicted by the model are cross-tabulated below. The cross-tabulation shows that based on the model, none of the cases is has more than a 50 % chance of domestic violence victimization being reported; in other words, all the respondents are predicted not to have experienced domestic violence even though there are 768 people who actually reported having been victimized.
+The actual values of the domestic violence variable and its values predicted by the model are cross-tabulated below. The cross-tabulation shows that based on the model, none of the cases has more than a 50 % chance of domestic violence victimization being reported; in other words, all the respondents are predicted not to have experienced domestic violence even though there are 768 people who actually reported having been victimized.
 
 ```{r}
 probabilities <- predict(m, type = "response")
